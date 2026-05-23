@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ParkShare – Community Survey</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0d0d0d;
+    --paper: #f5f0e8;
+    --accent: #e85c2f;
+    --accent2: #2f6ee8;
+    --muted: #7a7060;
+    --card: #fffdf8;
+    --border: #d6cfc0;
+    --yes: #2a9d5c;
+    --no: #c0392b;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(232,92,47,0.06) 0%, transparent 50%),
+      radial-gradient(circle at 90% 80%, rgba(47,110,232,0.06) 0%, transparent 50%);
+  }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    padding: 64px 24px 48px;
+    position: relative;
+  }
+  .tag {
+    display: inline-block;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+    padding: 4px 14px;
+    border-radius: 2px;
+    margin-bottom: 20px;
+  }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    max-width: 700px;
+    margin: 0 auto 16px;
+  }
+  h1 span { color: var(--accent); }
+  .subtitle {
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--muted);
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .divider {
+    width: 48px; height: 3px;
+    background: var(--accent);
+    margin: 32px auto 0;
+    border-radius: 2px;
+  }
+
+  /* ── FORM WRAPPER ── */
+  .form-wrap {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+  }
+
+  /* ── SECTION HEADING ── */
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 48px 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 28px 24px;
+    margin-bottom: 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 0;
+    background: var(--accent);
+    transition: height 0.3s ease;
+    border-radius: 0 0 2px 0;
+  }
+  .card:focus-within::before,
+  .card.active::before { height: 100%; }
+  .card:focus-within { border-color: var(--accent); box-shadow: 0 4px 24px rgba(232,92,47,0.08); }
+
+  .q-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    margin-bottom: 8px;
+  }
+  .q-text {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .q-hint {
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 18px;
+    line-height: 1.4;
+  }
+
+  /* ── RADIO / CHECKBOX ── */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+  }
+  .opt input[type="radio"],
+  .opt input[type="checkbox"] { display: none; }
+  .opt-box {
+    width: 20px; height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .opt input[type="checkbox"] + .opt-box { border-radius: 4px; }
+  .opt-box::after {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.15s;
+  }
+  .opt input[type="checkbox"] + .opt-box::after {
+    border-radius: 2px;
+  }
+  .opt input:checked + .opt-box {
+    border-color: var(--accent);
+    background: rgba(232,92,47,0.06);
+  }
+  .opt input:checked + .opt-box::after {
+    opacity: 1; transform: scale(1);
+  }
+  .opt-label {
+    font-size: 15px;
+    color: var(--ink);
+    font-weight: 400;
+  }
+  .opt:hover .opt-box { border-color: var(--accent); }
+
+  /* ── INLINE RADIO PILLS ── */
+  .pill-row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .pill {
+    display: flex; align-items: center; gap: 8px;
+    cursor: pointer;
+    padding: 8px 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 100px;
+    font-size: 14px;
+    transition: all 0.15s;
+    background: transparent;
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .pill input { display: none; }
+  .pill:hover { border-color: var(--accent); color: var(--accent); }
+  .pill.selected { border-color: var(--accent); background: var(--accent); color: #fff; }
+
+  /* ── SCALE ── */
+  .scale-row {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-top: 4px;
+  }
+  .scale-btn {
+    width: 44px; height: 44px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: transparent;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--ink);
+    transition: all 0.15s;
+  }
+  .scale-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+  .scale-btn.selected { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+  .scale-labels {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--muted); margin-top: 8px;
+  }
+
+  /* ── TEXT INPUT ── */
+  textarea, input[type="text"], input[type="email"], input[type="number"] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--paper);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    resize: vertical;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  textarea:focus, input:focus {
+    border-color: var(--accent);
+  }
+  textarea { min-height: 90px; }
+
+  /* ── SUBMIT ── */
+  .submit-wrap { margin-top: 40px; text-align: center; }
+  .submit-btn {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    padding: 16px 48px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .submit-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.15);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .submit-btn:hover::after { opacity: 1; }
+  .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,92,47,0.3); }
+  .submit-note { font-size: 12px; color: var(--muted); margin-top: 12px; }
+
+  /* ── THANK YOU ── */
+  #thankyou {
+    display: none;
+    text-align: center;
+    padding: 80px 24px;
+    animation: fadeUp 0.5s ease forwards;
+  }
+  .ty-icon {
+    font-size: 56px; margin-bottom: 20px;
+  }
+  #thankyou h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 32px; font-weight: 800;
+    margin-bottom: 12px;
+  }
+  #thankyou p { font-size: 16px; color: var(--muted); max-width: 400px; margin: 0 auto; line-height: 1.6; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── PROGRESS ── */
+  .progress-bar-wrap {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--paper);
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .progress-inner { max-width: 660px; margin: 0 auto; }
+  .progress-track {
+    height: 3px; background: var(--border); border-radius: 2px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .progress-text {
+    font-size: 11px; color: var(--muted);
+    text-align: right; margin-top: 4px;
+    font-family: 'Syne', sans-serif; font-weight: 700; letter-spacing: 0.1em;
+  }
+
+  .required-star { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="progress-bar-wrap">
+  <div class="progress-inner">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText">0 of 14 answered</div>
+  </div>
+</div>
+
+<header>
+  <div class="tag">Community Survey</div>
+  <h1>Park<span>Share</span></h1>
+  <p class="subtitle">Help us build a smarter way to share parking spaces — earn when you're away, save when you need a spot.</p>
+  <div class="divider"></div>
+</header>
+
+<div class="form-wrap" id="formWrap">
+<form id="surveyForm" action="https://formspree.io/f/xykvpgdp" method="POST" novalidate>
+  <input type="hidden" name="nps_score" id="hiddenNps">
+  <input type="hidden" name="concerns_selected" id="hiddenConcerns">
+  <input type="hidden" name="features_selected" id="hiddenFeatures">
+
+  <!-- SECTION 1 -->
+  <div class="section-label">About You</div>
+
+  <div class="card" id="c1">
+    <div class="q-num">Q1 <span class="required-star">*</span></div>
+    <div class="q-text">What city / area are you based in?</div>
+    <input type="text" name="city" placeholder="e.g. Mumbai, Bangalore, Delhi…" required>
+  </div>
+
+  <div class="card" id="c2">
+    <div class="q-num">Q2 <span class="required-star">*</span></div>
+    <div class="q-text">Do you own or have access to a private parking space?</div>
+    <div class="options">
+      <label class="opt"><input type="radio" name="owns_space" value="yes" required><span class="opt-box"></span><span class="opt-label">Yes, I own/have one</span></label>
+      <label class="opt"><input type="radio" name="owns_space" value="no"><span class="opt-box"></span><span class="opt-label">No, I don't</span></label>
+      <label class="opt"><input type="radio" name="owns_space" value="shared"><span class="opt-box"></span><span class="opt-label">I share one with others</span></label>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="section-label">Listing Your Space</div>
+
+  <div class="card" id="c3">
+    <div class="q-num">Q3 <span class="required-star">*</span></div>
+    <div class="q-text">If you're away (at work, travelling, etc.), would you be open to renting out your parking space to earn extra money?</div>
+    <div class="options">
+      <label class="opt"><input type="radio" name="list_space" value="yes_def" required><span class="opt-box"></span><span class="opt-label">Yes, definitely!</span></label>
+      <label class="opt"><input type="radio" name="list_space" value="yes_maybe"><span class="opt-box"></span><span class="opt-label">Yes, maybe — depends on the terms</span></label>
+      <label class="opt"><input type="radio" name="list_space" value="not_sure"><span class="opt-box"></span><span class="opt-label">Not sure yet</span></label>
+      <label class="opt"><input type="radio" name="list_space" value="no"><span class="opt-box"></span><span class="opt-label">No, I prefer to keep it private</span></label>
+    </div>
+  </div>
+
+  <div class="card" id="c4">
+    <div class="q-num">Q4</div>
+    <div class="q-text">How many hours per day is your parking space typically empty / unused?</div>
+    <div class="pill-row" id="emptyHours">
+      <label class="pill"><input type="radio" name="empty_hours" value="1-3"> 1–3 hrs</label>
+      <label class="pill"><input type="radio" name="empty_hours" value="4-6"> 4–6 hrs</label>
+      <label class="pill"><input type="radio" name="empty_hours" value="7-10"> 7–10 hrs</label>
+      <label class="pill"><input type="radio" name="empty_hours" value="10+"> 10+ hrs</label>
+      <label class="pill"><input type="radio" name="empty_hours" value="whole_day"> Most of the day</label>
+    </div>
+  </div>
+
+  <div class="card" id="c5">
+    <div class="q-num">Q5</div>
+    <div class="q-text">What hourly rate would feel fair to you for listing your space? (in ₹)</div>
+    <div class="q-hint">Just a rough estimate — you'll set your own price on the app.</div>
+    <div class="pill-row" id="listRate">
+      <label class="pill"><input type="radio" name="list_rate" value="20-40"> ₹20–40/hr</label>
+      <label class="pill"><input type="radio" name="list_rate" value="40-70"> ₹40–70/hr</label>
+      <label class="pill"><input type="radio" name="list_rate" value="70-100"> ₹70–100/hr</label>
+      <label class="pill"><input type="radio" name="list_rate" value="100+"> ₹100+/hr</label>
+    </div>
+  </div>
+
+  <div class="card" id="c6">
+    <div class="q-num">Q6</div>
+    <div class="q-text">What would be your biggest concern about listing your space?</div>
+    <div class="options" id="listConcerns">
+      <label class="opt"><input type="checkbox" name="concern" value="damage"><span class="opt-box"></span><span class="opt-label">Risk of vehicle damage to my property</span></label>
+      <label class="opt"><input type="checkbox" name="concern" value="safety"><span class="opt-box"></span><span class="opt-label">Safety / unauthorized access</span></label>
+      <label class="opt"><input type="checkbox" name="concern" value="trust"><span class="opt-box"></span><span class="opt-label">Trusting strangers</span></label>
+      <label class="opt"><input type="checkbox" name="concern" value="payment"><span class="opt-box"></span><span class="opt-label">Not getting paid on time</span></label>
+      <label class="opt"><input type="checkbox" name="concern" value="no_concern"><span class="opt-box"></span><span class="opt-label">No major concerns</span></label>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="section-label">Finding a Space</div>
+
+  <div class="card" id="c7">
+    <div class="q-num">Q7 <span class="required-star">*</span></div>
+    <div class="q-text">Have you ever struggled to find a safe parking space in your city?</div>
+    <div class="options">
+      <label class="opt"><input type="radio" name="struggled" value="frequently" required><span class="opt-box"></span><span class="opt-label">Yes, very frequently</span></label>
+      <label class="opt"><input type="radio" name="struggled" value="sometimes"><span class="opt-box"></span><span class="opt-label">Sometimes</span></label>
+      <label class="opt"><input type="radio" name="struggled" value="rarely"><span class="opt-box"></span><span class="opt-label">Rarely</span></label>
+      <label class="opt"><input type="radio" name="struggled" value="never"><span class="opt-box"></span><span class="opt-label">Never</span></label>
+    </div>
+  </div>
+
+  <div class="card" id="c8">
+    <div class="q-num">Q8 <span class="required-star">*</span></div>
+    <div class="q-text">Would you be willing to pay an hourly fee to park your vehicle in a safe, verified private space?</div>
+    <div class="options">
+      <label class="opt"><input type="radio" name="pay_to_park" value="yes" required><span class="opt-box"></span><span class="opt-label">Yes, absolutely</span></label>
+      <label class="opt"><input type="radio" name="pay_to_park" value="yes_right_price"><span class="opt-box"></span><span class="opt-label">Yes, if the price is right</span></label>
+      <label class="opt"><input type="radio" name="pay_to_park" value="maybe"><span class="opt-box"></span><span class="opt-label">Maybe — I'd like to know more</span></label>
+      <label class="opt"><input type="radio" name="pay_to_park" value="no"><span class="opt-box"></span><span class="opt-label">No, I'd stick to regular parking</span></label>
+    </div>
+  </div>
+
+  <div class="card" id="c9">
+    <div class="q-num">Q9</div>
+    <div class="q-text">What's the maximum hourly rate you'd pay to park in a safe private spot?</div>
+    <div class="pill-row" id="payRate">
+      <label class="pill"><input type="radio" name="pay_rate" value="up_to_20"> Up to ₹20</label>
+      <label class="pill"><input type="radio" name="pay_rate" value="20-50"> ₹20–50</label>
+      <label class="pill"><input type="radio" name="pay_rate" value="50-80"> ₹50–80</label>
+      <label class="pill"><input type="radio" name="pay_rate" value="80-120"> ₹80–120</label>
+      <label class="pill"><input type="radio" name="pay_rate" value="120+"> ₹120+</label>
+    </div>
+  </div>
+
+  <div class="card" id="c10">
+    <div class="q-num">Q10</div>
+    <div class="q-text">What features matter most to you as a parker? (Select all that apply)</div>
+    <div class="options">
+      <label class="opt"><input type="checkbox" name="feature" value="realtime_map"><span class="opt-box"></span><span class="opt-label">Real-time map showing available spots</span></label>
+      <label class="opt"><input type="checkbox" name="feature" value="cctv"><span class="opt-box"></span><span class="opt-label">CCTV / security at the space</span></label>
+      <label class="opt"><input type="checkbox" name="feature" value="advance_booking"><span class="opt-box"></span><span class="opt-label">Advance booking option</span></label>
+      <label class="opt"><input type="checkbox" name="feature" value="instant"><span class="opt-box"></span><span class="opt-label">Instant, on-demand booking</span></label>
+      <label class="opt"><input type="checkbox" name="feature" value="upi_pay"><span class="opt-box"></span><span class="opt-label">UPI / digital payment integration</span></label>
+      <label class="opt"><input type="checkbox" name="feature" value="ratings"><span class="opt-box"></span><span class="opt-label">Ratings & reviews for spaces</span></label>
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="section-label">App Launch Interest</div>
+
+  <div class="card" id="c11">
+    <div class="q-num">Q11 <span class="required-star">*</span></div>
+    <div class="q-text">If <strong>ParkShare</strong> launched in your city — a peer-to-peer parking app where you can list your space OR find & book safe spaces by the hour — would you use it?</div>
+    <div class="options">
+      <label class="opt"><input type="radio" name="use_app" value="yes_both" required><span class="opt-box"></span><span class="opt-label">Yes! Both — I'd list my space AND use others'</span></label>
+      <label class="opt"><input type="radio" name="use_app" value="yes_list"><span class="opt-box"></span><span class="opt-label">Yes — mainly to list my space and earn</span></label>
+      <label class="opt"><input type="radio" name="use_app" value="yes_find"><span class="opt-box"></span><span class="opt-label">Yes — mainly to find parking when I need it</span></label>
+      <label class="opt"><input type="radio" name="use_app" value="maybe"><span class="opt-box"></span><span class="opt-label">Maybe — I'd try it out</span></label>
+      <label class="opt"><input type="radio" name="use_app" value="no"><span class="opt-box"></span><span class="opt-label">No, I don't think it's for me</span></label>
+    </div>
+  </div>
+
+  <div class="card" id="c12">
+    <div class="q-num">Q12 <span class="required-star">*</span></div>
+    <div class="q-text">How likely are you to recommend this app to friends or family once it launches?</div>
+    <div class="q-hint">1 = Not at all likely &nbsp;·&nbsp; 10 = Extremely likely</div>
+    <div class="scale-row" id="npsScale"></div>
+    <div class="scale-labels"><span>Not likely</span><span>Extremely likely</span></div>
+  </div>
+
+  <div class="card" id="c13">
+    <div class="q-num">Q13</div>
+    <div class="q-text">Which platform would you prefer to use ParkShare on?</div>
+    <div class="options">
+      <label class="opt"><input type="radio" name="platform" value="android"><span class="opt-box"></span><span class="opt-label">Android app</span></label>
+      <label class="opt"><input type="radio" name="platform" value="ios"><span class="opt-box"></span><span class="opt-label">iOS (iPhone) app</span></label>
+      <label class="opt"><input type="radio" name="platform" value="both"><span class="opt-box"></span><span class="opt-label">Either works for me</span></label>
+      <label class="opt"><input type="radio" name="platform" value="web"><span class="opt-box"></span><span class="opt-label">Website / web browser</span></label>
+    </div>
+  </div>
+
+  <div class="card" id="c14">
+    <div class="q-num">Q14</div>
+    <div class="q-text">Any other thoughts, suggestions, or features you'd love to see in ParkShare?</div>
+    <textarea name="suggestions" placeholder="Share your ideas here…"></textarea>
+  </div>
+
+  <div class="card" id="c15">
+  <div class="q-num">Early Access</div>
+  <div class="q-text">Want to be notified when ParkShare launches in your city?</div>
+  <div class="q-hint">We'll send one launch email. No spam, ever.</div>
+
+  <label>
+    Your email:
+    <input type="email" name="email" placeholder="your@email.com">
+  </label>
+
+  <br><br>
+
+  <label>
+    Your message:
+    <textarea name="message" placeholder="Write your message here..."></textarea>
+  </label>
+</div>
+
+  <div class="submit-wrap">
+    <button type="submit" class="submit-btn">Submit Responses →</button>
+    <p class="submit-note">Responses are anonymous unless you share your email above.</p>
+  </div>
+
+</form>
+</div>
+
+<div id="thankyou">
+  <div class="ty-icon">🎉</div>
+  <h2>Thank you!</h2>
+  <p>Your responses will help shape ParkShare. We'll let you know when we launch — keep an eye on your inbox!</p>
+</div>
+
+<script>
+  // ── Build NPS scale ──
+  const npsContainer = document.getElementById('npsScale');
+  for (let i = 1; i <= 10; i++) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'scale-btn';
+    btn.textContent = i;
+    btn.dataset.value = i;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      btn.dataset.selected = 'true';
+      updateProgress();
+    });
+    npsContainer.appendChild(btn);
+  }
+
+  // ── Pill selection ──
+  document.querySelectorAll('.pill input').forEach(input => {
+    input.addEventListener('change', () => {
+      const name = input.name;
+      document.querySelectorAll(`.pill input[name="${name}"]`).forEach(i => {
+        i.closest('.pill').classList.toggle('selected', i.checked);
+      });
+      updateProgress();
+    });
+  });
+
+  // ── Progress ──
+  const TOTAL = 14;
+  function answeredCount() {
+    let count = 0;
+    const answered = new Set();
+    // radios
+    document.querySelectorAll('input[type="radio"]:checked').forEach(i => answered.add(i.name));
+    // checkboxes
+    document.querySelectorAll('input[type="checkbox"]:checked').forEach(i => answered.add(i.name));
+    // text/email
+    document.querySelectorAll('input[type="text"], input[type="email"], textarea').forEach(i => {
+      if (i.value.trim()) answered.add(i.name);
+    });
+    // NPS
+    if (document.querySelector('.scale-btn.selected')) answered.add('nps');
+    return answered.size;
+  }
+  function updateProgress() {
+    const n = answeredCount();
+    const pct = Math.min(100, Math.round((n / TOTAL) * 100));
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = `${n} of ${TOTAL} answered`;
+  }
+
+  document.querySelectorAll('input, textarea').forEach(el => {
+    el.addEventListener('input', updateProgress);
+    el.addEventListener('change', updateProgress);
+  });
+
+  // ── Submit: populate hidden fields, then let native POST to Formspree proceed ──
+  document.getElementById('surveyForm').addEventListener('submit', function(e) {
+
+    // Validate required fields first
+    const required = ['city', 'owns_space', 'list_space', 'struggled', 'pay_to_park', 'use_app'];
+    let ok = true;
+    required.forEach(name => {
+      const el = this.elements[name];
+      if (!el) return;
+      if (el instanceof RadioNodeList) {
+        let any = false;
+        el.forEach(r => { if (r.checked) any = true; });
+        if (!any) ok = false;
+      } else if (el.value === '') ok = false;
+    });
+    if (!ok) {
+      e.preventDefault();
+      alert('Please answer the required questions (marked with ★) before submitting.');
+      return;
+    }
+
+    // Populate hidden fields so Formspree receives them
+    const npsBtn = document.querySelector('.scale-btn.selected');
+    document.getElementById('hiddenNps').value = npsBtn ? npsBtn.dataset.value : 'Not answered';
+
+    const concerns = [...document.querySelectorAll('input[name="concern"]:checked')].map(i => i.value).join(', ');
+    document.getElementById('hiddenConcerns').value = concerns || 'None selected';
+
+    const features = [...document.querySelectorAll('input[name="feature"]:checked')].map(i => i.value).join(', ');
+    document.getElementById('hiddenFeatures').value = features || 'None selected';
+
+    // Visual feedback before page navigates
+    document.getElementById('progressFill').style.width = '100%';
+    document.getElementById('progressText').textContent = 'Submitting…';
+    document.querySelector('.submit-btn').textContent = 'Submitting…';
+    // Native POST to https://formspree.io/f/xykvpgdp proceeds here
+  });
+</script>
+</body>
+</html>
